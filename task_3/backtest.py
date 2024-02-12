@@ -12,14 +12,16 @@ class BacktestStrategy:
     def calculate_returns(self):
         top_5_returns = []
         even_returns = []
-
+        previous_date = None
         for date, row in self.factors.iterrows():
             sorted_tickers = row.sort_values(ascending=False)
             top_5_tickers = sorted_tickers.nlargest(5).index
-
+            
             # Calculate returns for top 5 and even positions
-            top_5_returns.append(self._calculate_daily_return(top_5_tickers, date))
-            even_returns.append(self._calculate_daily_return(self.factors.columns, date))
+            if previous_date != None:
+                top_5_returns.append(self._calculate_daily_return(top_5_tickers, previous_date))
+                even_returns.append(self._calculate_daily_return(self.factors.columns, previous_date))
+            previous_date = date
 
         return top_5_returns, even_returns
 
